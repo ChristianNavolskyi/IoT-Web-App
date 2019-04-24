@@ -1,0 +1,13 @@
+version: "2"
+
+volumes:
+  database:
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongo-web-backend
+    ports:
+      - 27017:27017
+    volumes:
+      - database:/data/db/
