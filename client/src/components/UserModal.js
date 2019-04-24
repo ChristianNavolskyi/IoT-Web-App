@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import {Button, Modal, ModalHeader, ModalBody, Form, FormGroup, Label, Input} from "reactstrap";
 import {connect} from "react-redux";
-import uuid from "uuid";
 
 import {addUser} from "../actions/userActions";
 
@@ -28,7 +27,6 @@ class UserModal extends Component {
 		e.preventDefault();
 
 		const newUser = {
-			id: uuid(),
 			name: this.state.name
 		};
 
@@ -49,9 +47,7 @@ class UserModal extends Component {
 				<Modal
 					isOpen={this.state.modal}
 					toggle={this.toggle}>
-					<ModalHeader toggle={this.toggle}>
-						Add To User List
-					</ModalHeader>
+					<ModalHeader toggle={this.toggle}>Add To User List</ModalHeader>
 					<ModalBody>
 						<Form onSubmit={this.onSubmit}>
 							<FormGroup>
@@ -78,7 +74,6 @@ class UserModal extends Component {
 	}
 }
 
-const mapStateToProps = state => ({
-});
+const mapStateToProps = state => ({});
 
 export default connect(mapStateToProps, {addUser})(UserModal);
