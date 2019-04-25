@@ -1,15 +1,36 @@
 import React, {Component} from "react";
 import {Container, ListGroup, ListGroupItem, Button} from "reactstrap";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
-import PropTypes from "prop-types";
 
+// Redux actions and types
+import PropTypes from "prop-types";
 import {connect} from "react-redux";
 import {getUsers, deleteUser} from "../actions/userActions";
+
+// Pusher for life updates
+import Pusher from "pusher-js";
+
+Pusher.logToConsole = true;
+const pusher = new Pusher('bd94a2a2564938087657', {
+	cluster: 'eu',
+	forceTLS: true
+});
 
 
 class UserList extends Component {
 	componentDidMount() {
 		this.props.getUsers();
+
+		const userChannel = pusher.subscribe("user-channel");
+		userChannel.bind("user-added", () => {
+			this.props.getUsers();
+		});
+		userChannel.bind("breath-value-added", () => {
+			this.props.getUsers();
+		});
+		userChannel.bind("user-deleted", () => {
+			this.props.getUsers();
+		});
 	}
 
 	onDeleteClick = id => {
@@ -51,7 +72,7 @@ UserList.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-	user: state.user,
+	user: state.user
 });
 
 
