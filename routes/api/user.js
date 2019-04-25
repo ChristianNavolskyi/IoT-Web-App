@@ -30,18 +30,6 @@ router.get("/", (req, res) => {
 		})
 });
 
-// @route 	GET api/users/:id/breath
-// @desc 	Get breath values from user
-// @access 	Public
-router.get("/", (req, res) => {
-	User.find()
-		.sort({name: 1})
-		.then(users => {
-			res.json(users)
-		})
-});
-
-
 // @route 	POST api/users
 // @desc 	Create a user
 // @access 	Public
@@ -52,10 +40,11 @@ router.post("/", (req, res) => {
 	});
 
 	newUser.save()
-		.then(user => res.json(user))
-		.then(() => pusher.trigger(channel, "user-added", {
-			user: newUser
-		}))
+		.then(user => {
+			console.log(user);
+			res.json(user);
+			pusher.trigger(channel, "user-added", user)
+		})
 		.catch(err => res.status(500).json({success: false, message: "Could not create new user", data: err}));
 });
 
@@ -68,11 +57,13 @@ router.put("/:id", (req, res) => {
 	User.updateOne(
 		{_id: req.params.id},
 		{"$push": {"breath": breath}})
-		.then(result => res.status(201).json({success: true, message: "Breath value appended successfully", data: result}))
-		.then(() => pusher.trigger(channel, "breath-value-added", {
-			id: req.params.id,
-			breath: breath
-		}))
+		.then(result => {
+			res.status(201).json({success: true, message: "Breath value appended successfully", data: result});
+			pusher.trigger(channel, "breath-value-added", {
+				id: req.params.id,
+				breath: result
+			})
+		})
 		.catch(err => res.status(500).json({success: false, message: "Could not append value", data: err}));
 });
 
@@ -83,7 +74,7 @@ router.delete("/:id", (req, res) => {
 	User.findById(req.params.id)
 		.then(user => user.remove()
 			.then(() => res.json({success: true}))
-			.then(() => pusher.trigger(channel, "user-deleted", {id: user._id})))
+			.then(() => pusher.trigger(channel, "user-deleted", user._id)))
 		.catch(err => res.status(404).json({success: false, data: err}));
 });
 

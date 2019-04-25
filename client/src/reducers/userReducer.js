@@ -1,4 +1,4 @@
-import {GET_USERS, ADD_USER, DELETE_USER, USERS_LOADING} from "../actions/types";
+import {GET_USERS, ADD_USER, DELETE_USER, USERS_LOADING, ADD_BREATH_VALUE} from "../actions/types";
 
 const initialState = {
 	users: [],
@@ -27,6 +27,21 @@ export default function (state = initialState, action) {
 			return {
 				...state,
 				loading: true
+			};
+		case ADD_BREATH_VALUE:
+			const alteredUsers = state.users.map(user => {
+				if (user._id === action.payload.id) {
+					const alteredUser = user;
+					alteredUser.breath = [...user.breath, action.payload.breath];
+					return alteredUser;
+				}
+				return user;
+			});
+
+
+			return {
+				...state,
+				users: alteredUsers
 			};
 		default:
 			return state;
