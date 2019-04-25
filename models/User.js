@@ -10,9 +10,17 @@ const UserSchema = new Schema({
 		type: Date,
 		default: Date.now()
 	},
-	breath: {
-		type: Array
-	}
+	breath: [{
+		time: {
+			type: String,
+			unique: false,
+			index: false
+		},
+		value: Number
+	}],
+	lastEvaluation:
+	String
 });
+
 
 module.exports = User = mongoose.model("user", UserSchema);

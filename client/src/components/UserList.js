@@ -23,7 +23,7 @@ class UserList extends Component {
 			<Container>
 				<ListGroup>
 					<TransitionGroup className="user-list">
-						{users.map(({_id, name}) => (
+						{users.map(({_id, name, breath}) => (
 							<CSSTransition key={_id} timeout={500} classNames="fade">
 								<ListGroupItem>
 									<Button
@@ -33,7 +33,7 @@ class UserList extends Component {
 										onClick={this.onDeleteClick.bind(this, _id)}>
 										&times;
 									</Button>
-									{name}
+									{name} has {breath.length} breath entries
 								</ListGroupItem>
 							</CSSTransition>
 						))}

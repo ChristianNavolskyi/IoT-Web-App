@@ -11,7 +11,13 @@ const app = express();
 app.use(bodyParser.json());
 
 // DB config
-const db = require("./config/keys").herokuURI;
+let db;
+if (process.env.MONGO_BACKEND === "local") {
+	db = require("./config/keys").localURI
+} else {
+	db = require("./config/keys").herokuURI;
+}
+
 mongoose.connect(db, {useNewUrlParser: true})
 	.then(() => console.log("MongoDB connected."))
 	.catch((err) => console.log(err));
