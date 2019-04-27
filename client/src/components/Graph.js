@@ -14,16 +14,7 @@ class Graph extends Component {
 				chart: {
 					id: 'chartArea',
 					toolbar: {
-						autoSelected: 'pan',
 						show: false,
-						tools: {
-							selection: true,
-							zoom: true,
-							zoomin: false,
-							zoomout: false,
-							pan: true,
-							reset: true
-						},
 					},
 				},
 				colors: ['#F46E7A'],
