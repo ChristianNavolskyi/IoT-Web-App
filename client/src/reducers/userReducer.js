@@ -32,12 +32,11 @@ export default function (state = initialState, action) {
 			const alteredUsers = state.users.map(user => {
 				if (user._id === action.payload.id) {
 					const alteredUser = user;
-					alteredUser.breath = [...user.breath, action.payload.breath];
+					alteredUser.breath = [...user.breath, ...action.payload.breath];
 					return alteredUser;
 				}
 				return user;
 			});
-
 
 			return {
 				...state,

@@ -12,6 +12,7 @@ class UserModal extends Component {
 	};
 
 	toggle = () => {
+		console.log("Toggle add user modal");
 		this.setState({
 			modal: !this.state.modal
 		})
@@ -24,6 +25,7 @@ class UserModal extends Component {
 	};
 
 	onSubmit = e => {
+		console.log("Adding user");
 		e.preventDefault();
 
 		const newUser = {
@@ -41,7 +43,7 @@ class UserModal extends Component {
 				<Button
 					color="dark"
 					style={{marginBottom: "2rem"}}
-					onClick={this.toggle}
+					onClick={this.toggle.bind(this)}
 				>Add User</Button>
 
 				<Modal
@@ -74,6 +76,6 @@ class UserModal extends Component {
 	}
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = () => ({});
 
 export default connect(mapStateToProps, {addUser})(UserModal);

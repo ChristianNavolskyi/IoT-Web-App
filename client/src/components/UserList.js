@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Container, ListGroup, ListGroupItem, Button} from "reactstrap";
+import {Container, ListGroup, ListGroupItem} from "reactstrap";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
 
 // Redux actions and types
@@ -8,35 +8,37 @@ import {connect} from "react-redux";
 import {deleteUser} from "../actions/userActions";
 
 // Pusher for life updates
-import GraphModal from "./GraphModal";
+import UserListItem from "./UserListItem";
 
 
 class UserList extends Component {
 	onDeleteClick = id => {
-		this.props.deleteUser(id);
+		if (window.confirm("Are you sure you want to delete the user? All its data will be removed! This cannot be undone.")) {
+			console.log();
+			this.props.deleteUser(id);
+		}
 	};
 
 	render() {
-		const {users} = this.props.user;
+		const users = this.props.users;
 
 		return (
 			<Container>
 				<ListGroup>
 					<TransitionGroup className="user-list">
-						{users.map(({_id, name, breath}) => (
-							<CSSTransition key={_id} timeout={500} classNames="fade">
-								<ListGroupItem>
-									<Button
-										className="remove-btn"
-										color="danger"
-										size="sm"
-										onClick={this.onDeleteClick.bind(this, _id)}>
-										&times;
-									</Button>
-									{name} has {breath.length} breath entries
-								</ListGroupItem>
-							</CSSTransition>
-						))}
+						{users.map((user) => {
+							const {_id, name, breath} = user;
+
+							return (<CSSTransition key={_id} timeout={500} classNames="fade">
+									<ListGroupItem>
+										<UserListItem id={_id}
+													  onDelete={() => this.onDeleteClick.bind(this, _id)}>
+											{name} has {breath.length} breath entries
+										</UserListItem>
+									</ListGroupItem>
+								</CSSTransition>
+							);
+						})}
 					</TransitionGroup>
 				</ListGroup>
 			</Container>
@@ -46,11 +48,11 @@ class UserList extends Component {
 
 UserList.propTypes = {
 	deleteUser: PropTypes.func.isRequired,
-	user: PropTypes.object.isRequired
+	users: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
-	user: state.user
+	users: state.user.users
 });
 
 

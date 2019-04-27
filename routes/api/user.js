@@ -41,7 +41,6 @@ router.post("/", (req, res) => {
 
 	newUser.save()
 		.then(user => {
-			console.log(user);
 			res.json(user);
 			pusher.trigger(channel, "user-added", user)
 		})
@@ -61,7 +60,7 @@ router.put("/:id", (req, res) => {
 			res.status(201).json({success: true, message: "Breath value appended successfully", data: result});
 			pusher.trigger(channel, "breath-value-added", {
 				id: req.params.id,
-				breath: result
+				breath: breath
 			})
 		})
 		.catch(err => res.status(500).json({success: false, message: "Could not append value", data: err}));
