@@ -2,16 +2,29 @@ import {GET_USERS, ADD_USER, DELETE_USER, USERS_LOADING, ADD_BREATH_VALUE} from 
 
 const initialState = {
 	users: [],
-	loading: false
+	loading: false,
+	lastBreath: []
 };
 
 export default function (state = initialState, action) {
+	let lastBreath;
+
 	switch (action.type) {
 		case GET_USERS:
+			lastBreath = action.payload.map(user => {
+				const breath = user.breath;
+				if (breath.length > 0) {
+					const lastBreathData = breath[breath.length - 1];
+					return {id: user._id, breathData: lastBreathData};
+				}
+				return {id: user._id};
+			});
+
 			return {
 				...state,
 				users: action.payload,
-				loading: false
+				loading: false,
+				lastBreath: lastBreath
 			};
 		case DELETE_USER:
 			return {
@@ -38,9 +51,18 @@ export default function (state = initialState, action) {
 				return user;
 			});
 
+			lastBreath = state.lastBreath.map(breath => {
+				if (breath.id === action.payload.id) {
+					return {...breath, breathData: action.payload.breath[0]};
+				} else {
+					return breath;
+				}
+			});
+
 			return {
 				...state,
-				users: alteredUsers
+				users: alteredUsers,
+				lastBreath: lastBreath
 			};
 		default:
 			return state;

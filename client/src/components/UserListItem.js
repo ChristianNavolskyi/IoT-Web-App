@@ -5,6 +5,8 @@ import Graph from "./Graph";
 import LiveGraph from "./LiveGraph";
 import uuid from "uuid";
 
+import {connect} from "react-redux";
+
 const showBreath = "Show Live Breath";
 const hideBreath = "Hide Live Breath";
 const showFullBreath = "Show All Breath";
@@ -46,15 +48,6 @@ class UserListItem extends Component {
 	};
 
 	render() {
-		const time = new Date().getTime();
-		let cnt = 0;
-		const userData = [{
-			data: [...this.props.user.breath.map((breath) => {
-				cnt = cnt + 100;
-				return [time + cnt, breath.value]
-			})]
-		}];
-
 		return (
 			<div>
 				{this.props.children}
@@ -81,13 +74,13 @@ class UserListItem extends Component {
 					className="breath-modal"
 					isOpen={this.state.isLiveDataOpen}
 					style={{marginTop: "3rem", maxHeight: "60%"}}>
-					<LiveGraph id={this.props.user._id}/>
+					<LiveGraph id={this.props.id}/>
 				</Collapse>
 				<Collapse
 					className="breath-modal"
 					isOpen={this.state.isFullDataOpen}
 					style={{marginTop: "3rem", maxHeight: "60%"}}>
-					<Graph data={userData} updateId={this.state.graphUpdateId}/>
+					<Graph id={this.props.id} updateId={this.state.graphUpdateId}/>
 					<Button
 						block
 						color="dark"
@@ -100,10 +93,11 @@ class UserListItem extends Component {
 	}
 }
 
-UserListItem
-	.propTypes = {
-	user: PropTypes.object.isRequired,
+UserListItem.propTypes = {
+	id: PropTypes.string.isRequired,
 	onDelete: PropTypes.func.isRequired
 };
 
-export default UserListItem;
+const mapStateToProps = () => ({});
+
+export default connect(mapStateToProps, {})(UserListItem);

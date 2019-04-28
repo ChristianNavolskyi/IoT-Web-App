@@ -1,8 +1,7 @@
 import React, {Component} from "react";
 import ReactApexChart from "react-apexcharts"
-import {Button} from "reactstrap";
-import ApexChart from "apexcharts";
 import PropTypes from "prop-types";
+import ApexChart from "apexcharts";
 
 import uuid from "uuid";
 
@@ -10,14 +9,17 @@ import {connect} from "react-redux";
 
 class LiveGraph extends Component {
 
-	data = [[new Date().getTime(), 0]];
+	data = [];
+	series = [{data: this.data}];
 
 	constructor(props) {
 		super(props);
 
 		const id = uuid();
+		const range = 30000;
 
 		this.state = {
+			range: range,
 			uuid: id,
 			liveChartOptions: {
 				chart: {
@@ -46,49 +48,42 @@ class LiveGraph extends Component {
 				},
 				xaxis: {
 					type: "datetime",
-					range: 5000
+					range: range
 				}
 			},
 			series: [{
-				data: [[new Date().getTime(), 0]]
+				name: "Breath Value",
+				data: this.data
 			}],
 			intervalHandle: 0,
 			isAdding: false
 		}
 	}
 
-	addData = () => {
-		if (!this.state.isAdding) {
-			const range = this.state.liveChartOptions.xaxis.range;
-			const uuid = this.state.uuid;
+	componentDidMount() {
+		console.debug("Did Mount");
+		this.data = [...this.data, this.props.lastBreath];
+		this.series = [{data: this.data}];
 
-			const handle = setInterval(() => {
-				let data = this.data;
-				const lastY = data[data.length - 1][1];
+		console.debug(this.data);
 
-				if (new Date().getTime() - data[0][0] > 2 * range) {
-					data = data.slice(data.length / 2, data.length)
-				}
+		ApexChart.exec(this.state.uuid, "updateSeries", [{
+			name: "Breath Value",
+			data: this.data
+		}]);
+	}
 
-				this.data = [...data, [new Date().getTime(), lastY + Math.random() * 20 - 10]];
+	componentDidUpdate(prevProps, prevState, snapshot) {
+		console.debug("Did Update");
+		this.data = [...this.data, this.props.lastBreath];
+		this.series = [{data: this.data}];
+		console.debug(this.series);
 
-				ApexChart.exec(uuid, "updateSeries", [{
-					name: "Breath Value",
-					data: this.data
-				}]);
-			}, 100);
-
-			this.setState({
-				intervalHandle: handle
-			})
-		} else {
-			clearInterval(this.state.intervalHandle)
-		}
-
-		this.setState({
-			isAdding: !this.state.isAdding
-		})
-	};
+		ApexChart.exec(this.state.uuid, "updateSeries", [{
+			name: "Breath Value",
+			data: this.data
+		}]);
+	}
 
 	render() {
 		return (
@@ -96,7 +91,6 @@ class LiveGraph extends Component {
 				<div id="chart1">
 					<ReactApexChart options={this.state.liveChartOptions} series={this.state.series} type="line" height="230"/>
 				</div>
-				<Button onClick={this.addData.bind(this)}>Add Data</Button>
 			</div>
 		);
 	}
@@ -104,18 +98,13 @@ class LiveGraph extends Component {
 
 LiveGraph.propTypes = {
 	id: PropTypes.string.isRequired,
+	lastBreath: PropTypes.array.isRequired
 };
 
-
 const mapStateToProps = (state, ownProps) => {
-	const user = state.user.users.find(user => user._id === ownProps.id);
-	if (user) {
-		const breath = user.breath.map((breath) => {
-			return [breath.time, breath.value];
-		});
+	const lastBreath = state.user.lastBreath.find(breath => breath.id === ownProps.id).breathData;
 
-		return {breath: breath};
-	}
+	return {lastBreath: [parseInt(lastBreath.time), lastBreath.value]}
 };
 
 export default connect(mapStateToProps, {})(LiveGraph);

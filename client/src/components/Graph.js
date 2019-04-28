@@ -3,6 +3,8 @@ import ReactApexChart from "react-apexcharts"
 import PropTypes from "prop-types";
 import uuid from "uuid";
 
+import {connect} from "react-redux";
+
 
 class Graph extends Component {
 
@@ -80,10 +82,10 @@ class Graph extends Component {
 		return (
 			<div id="charts">
 				<div id="chart1">
-					<ReactApexChart options={this.state.chartOptionsArea} series={this.props.data} type="line" height="230"/>
+					<ReactApexChart options={this.state.chartOptionsArea} series={this.props.breathData} type="line" height="230"/>
 				</div>
 				<div id="chart2">
-					<ReactApexChart options={this.state.chartOptionsBrush} series={this.props.data} type="area" height="130"/>
+					<ReactApexChart options={this.state.chartOptionsBrush} series={this.props.breathData} type="area" height="130"/>
 				</div>
 			</div>
 		);
@@ -91,8 +93,24 @@ class Graph extends Component {
 }
 
 Graph.propTypes = {
-	data: PropTypes.array.isRequired,
+	breathData: PropTypes.array.isRequired,
+	id: PropTypes.string.isRequired,
 	updateId: PropTypes.string
 };
 
-export default Graph;
+const mapStateToProps = (state, ownProps) => {
+	const user = state.user.users.find(user => user._id === ownProps.id);
+	if (user) {
+		let breath = user.breath.map((breath) => {
+			return [parseInt(breath.time), breath.value];
+		});
+
+		if (breath.length === 0) {
+			breath = [[new Date().getTime(), 0]];
+		}
+
+		return {breathData: [{name: "test", data: breath}]};
+	}
+};
+
+export default connect(mapStateToProps, {})(Graph);

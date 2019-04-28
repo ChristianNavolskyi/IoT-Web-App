@@ -14,7 +14,6 @@ import UserListItem from "./UserListItem";
 class UserList extends Component {
 	onDeleteClick = id => {
 		if (window.confirm("Are you sure you want to delete the user? All its data will be removed! This cannot be undone.")) {
-			console.log();
 			this.props.deleteUser(id);
 		}
 	};
@@ -31,7 +30,7 @@ class UserList extends Component {
 
 							return (<CSSTransition key={_id} timeout={500} classNames="fade">
 									<ListGroupItem>
-										<UserListItem user={user}
+										<UserListItem id={_id}
 													  onDelete={() => this.onDeleteClick.bind(this, _id)}>
 											{name} has {breath.length} breath entries
 										</UserListItem>
