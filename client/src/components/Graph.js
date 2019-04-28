@@ -93,13 +93,14 @@ class Graph extends Component {
 }
 
 Graph.propTypes = {
-	breathData: PropTypes.array.isRequired,
 	id: PropTypes.string.isRequired,
-	updateId: PropTypes.string
+	updateId: PropTypes.string,
+	breathData: PropTypes.array
 };
 
 const mapStateToProps = (state, ownProps) => {
 	const user = state.user.users.find(user => user._id === ownProps.id);
+
 	if (user) {
 		let breath = user.breath.map((breath) => {
 			return [parseInt(breath.time), breath.value];
@@ -110,6 +111,8 @@ const mapStateToProps = (state, ownProps) => {
 		}
 
 		return {breathData: [{name: "test", data: breath}]};
+	} else {
+		return {}
 	}
 };
 
