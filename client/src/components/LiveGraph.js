@@ -4,31 +4,30 @@ import {Button} from "reactstrap";
 import ApexChart from "apexcharts";
 import PropTypes from "prop-types";
 
+import uuid from "uuid";
+
 import {connect} from "react-redux";
 
-let data = [[0, 0]];
-
 class LiveGraph extends Component {
+
+	data = [[new Date().getTime(), 0]];
 
 	constructor(props) {
 		super(props);
 
+		const id = uuid();
+
 		this.state = {
-			chartOptionsArea: {
+			uuid: id,
+			liveChartOptions: {
 				chart: {
-					id: "chartArea",
+					id: id,
 					toolbar: {
 						autoSelect: "pan",
 						show: false,
 						tools: {
-							selection: false,
-							zoom: false,
-							zoomin: false,
-							zoomout: false,
-							pan: false,
-							reset: true
-						},
-
+							zoom: false
+						}
 					},
 				},
 				colors: ["#F46E7A"],
@@ -47,64 +46,37 @@ class LiveGraph extends Component {
 				},
 				xaxis: {
 					type: "datetime",
-					range: 30000
+					range: 5000
 				}
 			},
 			series: [{
-				name: "Breath Value",
-				data: [[0, 0]]
+				data: [[new Date().getTime(), 0]]
 			}],
 			intervalHandle: 0,
 			isAdding: false
 		}
 	}
 
-	//
-	// componentDidUpdate(prevProps, prevState, snapshot) {
-	// 	const breathData = this.props.breath;
-	// 	if (!breathData) {
-	// 		return
-	// 	}
-	// 	const max = breathData[breathData.length - 1][0];
-	// 	let min = breathData[0];
-	//
-	// 	if (breathData.length > 10) {
-	// 		min = breathData[breathData.length - 10][0];
-	// 	}
-	//
-	// 	ApexChart.exec("chartArea", "updateOptions", {
-	// 		xaxis: {
-	// 			...this.state.chartOptionsArea.xaxis,
-	// 			min: min,
-	// 			max: max
-	// 		}
-	// 	});
-	//
-	// 	ApexChart.exec("chartArea", "updateSeries", [{
-	// 		name: "Breath Value",
-	// 		data: this.props.breath
-	// 	}]);
-	//
-	// 	console.log(min);
-	// 	console.log(max);
-	// }
-
 	addData = () => {
 		if (!this.state.isAdding) {
+			const range = this.state.liveChartOptions.xaxis.range;
+			const uuid = this.state.uuid;
+
 			const handle = setInterval(() => {
+				let data = this.data;
 				const lastY = data[data.length - 1][1];
-				console.log(data.length);
-				if (data.length > 160) {
-					data = data.slice(data.length - 150, data.length)
+
+				if (new Date().getTime() - data[0][0] > 2 * range) {
+					data = data.slice(data.length / 2, data.length)
 				}
 
-				data = [...data, [new Date().getTime(), lastY + Math.random() * 20 - 10]];
+				this.data = [...data, [new Date().getTime(), lastY + Math.random() * 20 - 10]];
 
-				ApexChart.exec("chartArea", "updateSeries", [{
+				ApexChart.exec(uuid, "updateSeries", [{
 					name: "Breath Value",
-					data: data
-				}])
-			}, 500);
+					data: this.data
+				}]);
+			}, 100);
 
 			this.setState({
 				intervalHandle: handle
@@ -122,7 +94,7 @@ class LiveGraph extends Component {
 		return (
 			<div id="charts">
 				<div id="chart1">
-					<ReactApexChart options={this.state.chartOptionsArea} series={this.state.series} type="line" height="230"/>
+					<ReactApexChart options={this.state.liveChartOptions} series={this.state.series} type="line" height="230"/>
 				</div>
 				<Button onClick={this.addData.bind(this)}>Add Data</Button>
 			</div>

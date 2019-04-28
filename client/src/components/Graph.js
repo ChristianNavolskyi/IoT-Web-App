@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import ReactApexChart from "react-apexcharts"
 import PropTypes from "prop-types";
+import uuid from "uuid";
 
 
 class Graph extends Component {
@@ -8,22 +9,16 @@ class Graph extends Component {
 	constructor(props) {
 		super(props);
 
+		const id = uuid();
+		const brushUuid = uuid();
+
 		this.state = {
 			chartOptionsArea: {
 				chart: {
-					id: "chartArea",
+					id: id,
 					toolbar: {
 						autoSelect: "pan",
-						show: false,
-						tools: {
-							selection: false,
-							zoom: false,
-							zoomin: false,
-							zoomout: false,
-							pan: false,
-							reset: true
-						},
-
+						show: false
 					},
 				},
 				colors: ["#F46E7A"],
@@ -41,14 +36,14 @@ class Graph extends Component {
 					size: 0
 				},
 				xaxis: {
-					range: 20
+					type: "datetime"
 				}
 			},
 			chartOptionsBrush: {
 				chart: {
-					id: "chartBrush",
+					id: brushUuid,
 					brush: {
-						target: "chartArea",
+						target: id,
 						enabled: true
 					},
 					selection: {
@@ -64,41 +59,27 @@ class Graph extends Component {
 					}
 				},
 				xaxis: {
+					type: "datetime",
 					tooltip: {
 						enabled: false
 					}
 				},
 				yaxis: {
-					show: true,
+					// show: true,
 					tickAmount: 2
 				}
 			},
-			series: [{
-				name: "Breath Value",
-				data: [[]]
-			}]
 		}
-	}
-
-	componentDidMount() {
-		console.log(this.props.data);
-
-		this.setState({
-			series: [{
-				name: "Breath Value",
-				data: this.props.data
-			}]
-		})
 	}
 
 	render() {
 		return (
 			<div id="charts">
 				<div id="chart1">
-					<ReactApexChart options={this.state.chartOptionsArea} series={this.state.series} type="line" height="230"/>
+					<ReactApexChart options={this.state.chartOptionsArea} series={this.props.data} type="line" height="230"/>
 				</div>
 				<div id="chart2">
-					<ReactApexChart options={this.state.chartOptionsBrush} series={this.state.series} type="area" height="130"/>
+					<ReactApexChart options={this.state.chartOptionsBrush} series={this.props.data} type="area" height="130"/>
 				</div>
 			</div>
 		);
