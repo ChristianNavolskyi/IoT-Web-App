@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Button, Collapse} from "reactstrap";
+import {Button, Collapse, Popover, PopoverBody, PopoverHeader} from "reactstrap";
 import PropTypes from "prop-types";
 import Graph from "./Graph";
 import LiveGraph from "./LiveGraph";
@@ -12,13 +12,29 @@ const hideBreath = "Hide Live Breath";
 const showFullBreath = "Show All Breath";
 const hideFullBreath = "Hide All Breath";
 
+const buttonId = "button";
+let cnt = 0;
+
+const getButtonId = () => {
+	cnt = cnt + 1;
+	return buttonId + cnt;
+};
+
 class UserListItem extends Component {
 	state = {
+		buttonUuid: getButtonId(),
 		isLiveDataOpen: false,
 		isFullDataOpen: false,
+		popoverOpen: false,
 		liveButtonText: showBreath,
 		fullButtonText: showFullBreath,
 		graphUpdateId: uuid(),
+	};
+
+	togglePopover = () => {
+		this.setState({
+			popoverOpen: !this.state.popoverOpen
+		})
 	};
 
 	toggleLiveData = () => {
@@ -51,6 +67,21 @@ class UserListItem extends Component {
 		return (
 			<div>
 				{this.props.children}
+				<Button
+					id={this.state.buttonUuid}
+					color="dark"
+					style={{marginLeft: "0.5rem"}}
+					type="button">
+					Show id
+				</Button>
+				<Popover placement="bottom" isOpen={this.state.popoverOpen} target={this.state.buttonUuid} toggle={this.togglePopover}>
+					<PopoverHeader>User Id</PopoverHeader>
+					<PopoverBody>
+						You can set this id in you device to show up here.
+						<br/>
+						ID: {this.props.id}
+					</PopoverBody>
+				</Popover>
 				<Button
 					color="dark"
 					style={{marginLeft: "0.5rem"}}

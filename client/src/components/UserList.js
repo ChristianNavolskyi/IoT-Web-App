@@ -32,7 +32,7 @@ class UserList extends Component {
 									<ListGroupItem>
 										<UserListItem id={_id}
 													  onDelete={() => this.onDeleteClick.bind(this, _id)}>
-											{name} has {breath.length} breath entries
+											{name}
 										</UserListItem>
 									</ListGroupItem>
 								</CSSTransition>

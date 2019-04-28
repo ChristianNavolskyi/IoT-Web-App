@@ -11,16 +11,14 @@ import {connect} from "react-redux";
 class LiveGraph extends Component {
 
 	data = [];
-	series = [{data: this.data}];
 
 	constructor(props) {
 		super(props);
 
 		const id = uuid();
-		const range = 30000;
 
 		this.state = {
-			range: range,
+			limit: 500,
 			uuid: id,
 			liveChartOptions: {
 				chart: {
@@ -49,7 +47,7 @@ class LiveGraph extends Component {
 				},
 				xaxis: {
 					type: "datetime",
-					range: range,
+					range: 30000,
 					tickPlacement: "between",
 					labels: {
 						formatter: function (value, timestamp, index) {
@@ -68,23 +66,24 @@ class LiveGraph extends Component {
 	}
 
 	componentDidMount() {
-		console.debug("Did Mount");
-		this.data = [...this.data, this.props.lastBreath];
-		this.series = [{data: this.data}];
+		if ("lastBreath" in this.props) {
+			this.data = [...this.data, this.props.lastBreath];
 
-		console.debug(this.data);
-
-		ApexChart.exec(this.state.uuid, "updateSeries", [{
-			name: "Breath Value",
-			data: this.data
-		}]);
+			ApexChart.exec(this.state.uuid, "updateSeries", [{
+				name: "Breath Value",
+				data: this.data
+			}]);
+		}
 	}
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
-		console.debug("Did Update");
+		const dataLength = this.data.length;
+
+		if (dataLength > this.state.limit) {
+			this.data = this.data.slice(dataLength / 2, dataLength)
+		}
+
 		this.data = [...this.data, this.props.lastBreath];
-		this.series = [{data: this.data}];
-		console.debug(this.series);
 
 		ApexChart.exec(this.state.uuid, "updateSeries", [{
 			name: "Breath Value",
@@ -105,13 +104,19 @@ class LiveGraph extends Component {
 
 LiveGraph.propTypes = {
 	id: PropTypes.string.isRequired,
-	lastBreath: PropTypes.array.isRequired
+	lastBreath: PropTypes.array
 };
 
 const mapStateToProps = (state, ownProps) => {
-	const lastBreath = state.user.lastBreath.find(breath => breath.id === ownProps.id).breathData;
+	const lastBreath = state.user.lastBreath.find(breath => breath.id === ownProps.id && "breathData" in breath);
 
-	return {lastBreath: [parseInt(lastBreath.time), lastBreath.value]}
+	if (lastBreath) {
+		const lastBreathData = lastBreath.breathData;
+
+		return {lastBreath: [parseInt(lastBreathData.time), lastBreathData.value]};
+	} else {
+		return {}
+	}
 };
 
 export default connect(mapStateToProps, {})(LiveGraph);
