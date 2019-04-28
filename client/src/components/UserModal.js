@@ -12,7 +12,6 @@ class UserModal extends Component {
 	};
 
 	toggle = () => {
-		console.log("Toggle add user modal");
 		this.setState({
 			modal: !this.state.modal
 		})
@@ -25,7 +24,6 @@ class UserModal extends Component {
 	};
 
 	onSubmit = e => {
-		console.log("Adding user");
 		e.preventDefault();
 
 		const newUser = {

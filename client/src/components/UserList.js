@@ -31,7 +31,7 @@ class UserList extends Component {
 
 							return (<CSSTransition key={_id} timeout={500} classNames="fade">
 									<ListGroupItem>
-										<UserListItem id={_id}
+										<UserListItem user={user}
 													  onDelete={() => this.onDeleteClick.bind(this, _id)}>
 											{name} has {breath.length} breath entries
 										</UserListItem>
@@ -48,7 +48,7 @@ class UserList extends Component {
 
 UserList.propTypes = {
 	deleteUser: PropTypes.func.isRequired,
-	users: PropTypes.object.isRequired
+	users: PropTypes.array.isRequired
 };
 
 const mapStateToProps = (state) => ({

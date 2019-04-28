@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import ReactApexChart from "react-apexcharts"
 import PropTypes from "prop-types";
 
-import {connect} from "react-redux";
 
 class Graph extends Component {
 
@@ -12,12 +11,22 @@ class Graph extends Component {
 		this.state = {
 			chartOptionsArea: {
 				chart: {
-					id: 'chartArea',
+					id: "chartArea",
 					toolbar: {
+						autoSelect: "pan",
 						show: false,
+						tools: {
+							selection: false,
+							zoom: false,
+							zoomin: false,
+							zoomout: false,
+							pan: false,
+							reset: true
+						},
+
 					},
 				},
-				colors: ['#F46E7A'],
+				colors: ["#F46E7A"],
 				stroke: {
 					width: 3,
 					curve: "smooth"
@@ -32,30 +41,29 @@ class Graph extends Component {
 					size: 0
 				},
 				xaxis: {
-					type: 'datetime'
+					range: 20
 				}
 			},
 			chartOptionsBrush: {
 				chart: {
-					id: 'chartBrush',
+					id: "chartBrush",
 					brush: {
-						target: 'chartArea',
+						target: "chartArea",
 						enabled: true
 					},
 					selection: {
 						enabled: true,
 					},
 				},
-				colors: ['#008FFB'],
+				colors: ["#008FFB"],
 				fill: {
-					type: 'gradient',
+					type: "gradient",
 					gradient: {
 						opacityFrom: 0.91,
 						opacityTo: 0.1,
 					}
 				},
 				xaxis: {
-					type: 'datetime',
 					tooltip: {
 						enabled: false
 					}
@@ -65,22 +73,32 @@ class Graph extends Component {
 					tickAmount: 2
 				}
 			},
+			series: [{
+				name: "Breath Value",
+				data: [[]]
+			}]
 		}
 	}
 
-	render() {
-		const series = [{
-			name: "Breath Values",
-			data: this.props.breath
-		}];
+	componentDidMount() {
+		console.log(this.props.data);
 
+		this.setState({
+			series: [{
+				name: "Breath Value",
+				data: this.props.data
+			}]
+		})
+	}
+
+	render() {
 		return (
 			<div id="charts">
 				<div id="chart1">
-					<ReactApexChart options={this.state.chartOptionsArea} series={series} type="line" height="230"/>
+					<ReactApexChart options={this.state.chartOptionsArea} series={this.state.series} type="line" height="230"/>
 				</div>
 				<div id="chart2">
-					<ReactApexChart options={this.state.chartOptionsBrush} series={series} type="area" height="130"/>
+					<ReactApexChart options={this.state.chartOptionsBrush} series={this.state.series} type="area" height="130"/>
 				</div>
 			</div>
 		);
@@ -88,17 +106,7 @@ class Graph extends Component {
 }
 
 Graph.propTypes = {
-	id: PropTypes.string.isRequired,
+	data: PropTypes.array.isRequired,
 };
 
-
-const mapStateToProps = (state, ownProps) => {
-	const breath = state.user.users.find(user => user._id === ownProps.id).breath.map((breath) => {
-		return [breath.time, breath.value];
-	});
-
-	console.log(breath);
-	return {breath: breath};
-};
-
-export default connect(mapStateToProps, {})(Graph);
+export default Graph;
