@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import ReactApexChart from "react-apexcharts"
 import PropTypes from "prop-types";
 import ApexChart from "apexcharts";
+import moment from "moment";
 
 import uuid from "uuid";
 
@@ -48,7 +49,13 @@ class LiveGraph extends Component {
 				},
 				xaxis: {
 					type: "datetime",
-					range: range
+					range: range,
+					tickPlacement: "between",
+					labels: {
+						formatter: function (value, timestamp, index) {
+							return moment(new Date(timestamp)).format("hh:mm:ss")
+						}
+					}
 				}
 			},
 			series: [{
