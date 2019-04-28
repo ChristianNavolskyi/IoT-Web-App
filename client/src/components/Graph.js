@@ -72,6 +72,10 @@ class Graph extends Component {
 		}
 	}
 
+	shouldComponentUpdate(nextProps, nextState, nextContext) {
+		return this.props.updateId !== nextProps.updateId;
+	}
+
 	render() {
 		return (
 			<div id="charts">
@@ -88,6 +92,7 @@ class Graph extends Component {
 
 Graph.propTypes = {
 	data: PropTypes.array.isRequired,
+	updateId: PropTypes.string
 };
 
 export default Graph;
