@@ -8,14 +8,16 @@ export const addUser = user => dispatch => {
 	})
 };
 
-export const addBreathValue = ({id, breath}) => dispatch => {
-	dispatch({
-		type: ADD_BREATH_VALUE,
-		payload: {
-			id: id,
-			breath: breath
-		}
-	})
+export const addBreathValue = (id, breaths) => dispatch => {
+	breaths.forEach(breath => {
+		dispatch({
+			type: ADD_BREATH_VALUE,
+			payload: {
+				id: id,
+				breath: breath
+			}
+		})
+	});
 };
 
 export const deleteUser = id => dispatch => {

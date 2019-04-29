@@ -32,7 +32,7 @@ class App extends Component {
 		userChannel.bind("user-added", user => {
 			this.props.addUser(user);
 		});
-		userChannel.bind("breath-value-added", (id, breath) => {
+		userChannel.bind("breath-value-added", ({id, breath}) => {
 			this.props.addBreathValue(id, breath);
 		});
 		userChannel.bind("user-deleted", id => {
