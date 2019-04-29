@@ -26,7 +26,7 @@ class UserList extends Component {
 				<ListGroup>
 					<TransitionGroup className="user-list">
 						{users.map((user) => {
-							const {_id, name, breath} = user;
+							const {_id, name} = user;
 
 							return (<CSSTransition key={_id} timeout={500} classNames="fade">
 									<ListGroupItem>
