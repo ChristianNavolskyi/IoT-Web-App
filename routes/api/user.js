@@ -5,6 +5,9 @@ const router = express.Router();
 // User Model
 const User = require("../../models/User");
 
+// Classification
+const notifyDataAdded = require("../../background/classifier").breathDataAdded;
+
 
 // Pusher for realtime updates
 const Pusher = require("pusher");
@@ -58,6 +61,7 @@ router.put("/:id", (req, res) => {
 		{"$push": {"breath": breath}})
 		.then(result => {
 			res.status(201).json({success: true, message: "Breath value appended successfully", data: result});
+			notifyDataAdded(req.params.id);
 			pusher.trigger(channel, "breath-value-added", {
 				id: req.params.id,
 				breath: breath

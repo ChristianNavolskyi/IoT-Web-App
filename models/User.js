@@ -18,8 +18,7 @@ const UserSchema = new Schema({
 		},
 		value: Number
 	}],
-	lastEvaluation:
-	String
+	lastEvaluation: String,
 });
 
 

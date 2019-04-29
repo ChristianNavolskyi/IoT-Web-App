@@ -2,6 +2,12 @@
 import {GET_USERS, ADD_USER, DELETE_USER, USERS_LOADING} from "./types";
 import axios from "axios";
 
+export const telegramTest = (userId) => {
+	const data = {userId: userId, message: "Telegram Test Message"};
+
+	axios.post("api/telegram", data)
+};
+
 export const getUsers = () => dispatch => {
 	dispatch(setUsersLoading());
 	axios.get("/api/user")

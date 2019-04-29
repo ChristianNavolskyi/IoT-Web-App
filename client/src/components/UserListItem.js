@@ -6,6 +6,7 @@ import LiveGraph from "./LiveGraph";
 import uuid from "uuid";
 
 import {connect} from "react-redux";
+import {telegramTest} from "../actions/userActions";
 
 const showBreath = "Show Live Breath";
 const hideBreath = "Hide Live Breath";
@@ -93,6 +94,12 @@ class UserListItem extends Component {
 					style={{marginLeft: "0.5rem"}}
 					onClick={this.toggleFullData}>
 					{this.state.fullButtonText}
+				</Button>
+				<Button
+					color="dark"
+					style={{marginLeft: "0.5rem"}}
+					onClick={() => telegramTest(this.props.id)}>
+					Send test notification
 				</Button>
 				<Button
 					className="remove-btn, float-right"
