@@ -33,8 +33,7 @@ class LiveGraph extends Component {
 				},
 				colors: ["#F46E7A"],
 				stroke: {
-					width: 3,
-					curve: "smooth"
+					width: 3
 				},
 				dataLabels: {
 					enabled: false
