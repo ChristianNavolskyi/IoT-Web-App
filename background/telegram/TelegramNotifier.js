@@ -1,7 +1,7 @@
 const bot = require("./TelegramBot").Bot;
 
-const sendMessageToChats = (chats, message) => {
-	chats.forEach(chat => {
+const sendMessageToChats = (chatIds, message) => {
+	chatIds.forEach(chat => {
 		if ("message" in message) {
 			bot.sendMessage(chat, message.message);
 		}

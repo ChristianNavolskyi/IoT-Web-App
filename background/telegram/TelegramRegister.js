@@ -68,11 +68,11 @@ const setup = () => {
 		const userId = match[1];
 
 		function registerUserToListener(listener, user) {
-			if (listener.listenerIds.includes(userId)) {
+			if (listener.userIds.includes(userId)) {
 				bot.sendMessage(message.chat.id, `You are already registered for update from ${user.name}`)
 			} else {
 				TelegramListener.updateOne({_id: listener._id},
-					{"$push": {listenerIds: userId}})
+					{$push: {userIds: userId}})
 					.then(() => {
 						bot.sendMessage(message.chat.id, `You have successfully registered for notifications from ${user.name}`)
 					})

@@ -10,9 +10,13 @@ const TelegramListener = require("../../models/TelegramListeners");
 const sendMessageToChats = require("../../background/telegram/TelegramNotifier");
 
 
-// @route 	POST api/users
-// @desc 	Create a user
-// @access 	Public
+router.get("/", (req, res) => {
+	TelegramListener.find()
+		.then(listeners => {
+			res.json(listeners)
+		})
+});
+
 router.post("/", (req, res) => {
 	function notifyListeners(listeners) {
 		if (listeners.length > 0) {
@@ -29,8 +33,9 @@ router.post("/", (req, res) => {
 	if ("userId" in req.body && "message" in req.body) {
 		const userId = req.body.userId;
 
-		TelegramListener.find({listenerIds: userId})
+		TelegramListener.find({userIds: userId})
 			.then(listeners => {
+				console.log(listeners);
 				notifyListeners(listeners);
 			})
 			.catch(err => {

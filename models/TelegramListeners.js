@@ -12,7 +12,7 @@ const TelegramListenerSchema = new Schema({
 	},
 	firstName: String,
 	lastName: String,
-	listenerIds: [{
+	userIds: [{
 		type: String
 	}]
 });
