@@ -6,14 +6,12 @@ function breathDataAdded(userId) {
 		.then(user => {
 			const lastBreathTimeString = user.breath[user.breath.length - 1].time;
 
-			console.log(user.lastEvaluation);
 			if (!user.lastEvaluation) {
 				setLastEvaluation(user._id, lastBreathTimeString);
 			} else {
 				const lastEvaluationTimeNumber = parseInt(user.lastEvaluation);
 				const lastBreathTimeNumber = parseInt(lastBreathTimeString);
 
-				classifyBreath(user);
 				if (lastBreathTimeNumber - lastEvaluationTimeNumber > 30000) {
 					classifyBreath(user);
 				}
@@ -38,10 +36,16 @@ function classifyBreath(user) {
 		});
 
 	if (breathData.length > 200) {
-		sendMessageToChats(user._id, {message: "Found Test"});
+
+		if (asthma) {
+			sendMessageToChats(user._id, {message: "Asthma detected"});
+		} else if (apnoe) {
+			sendMessageToChats(user._id, {message: "Apnoe detected"});
+		}
 		setLastEvaluation(user._id, lastBreathTimeString);
+		sendMessageToChats(user._id, {message: "Found enough data"});
 	} else {
-		console.debug("Not enough data to classify");
+		console.debug(`Length: ${breathData.length}. Not enough data to classify`);
 	}
 }
 
