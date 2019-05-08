@@ -46,7 +46,7 @@ class LiveGraph extends Component {
 				},
 				xaxis: {
 					type: "datetime",
-					range: 30000,
+					range: 50000,
 					tickPlacement: "between",
 					labels: {
 						formatter: function (value, timestamp, index) {

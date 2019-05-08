@@ -25,6 +25,10 @@ function setLastEvaluation(userId, lastBreathTime) {
 		.catch(err => console.log(`Could not set last evaluation time. Error: ${err}`));
 }
 
+function getMaxBreathValue(breathData) {
+	return breathData.reduce((max, breath) => breath.value > max ? breath.value : max, breathData[0].value)
+}
+
 function classifyBreath(user) {
 	const lastEvaluationTimeNumber = parseInt(user.lastEvaluation);
 	const lastBreathTimeString = user.breath[user.breath.length - 1].time;
@@ -35,15 +39,23 @@ function classifyBreath(user) {
 			return {time: parseInt(breathData.time), value: breathData.value}
 		});
 
-	if (breathData.length > 200) {
+	if (breathData.length > 20) {
+		const maxBreathValue = getMaxBreathValue(breathData);
+		let asthma = false;
+		let apnea = false;
+
+		console.log(`Max Breath is ${maxBreathValue}`);
+		if (maxBreathValue < 100000) {
+			console.log("Trigger apnea");
+			apnea = true;
+		}
 
 		if (asthma) {
 			sendMessageToChats(user._id, {message: "Asthma detected"});
-		} else if (apnoe) {
-			sendMessageToChats(user._id, {message: "Apnoe detected"});
+		} else if (apnea) {
+			sendMessageToChats(user._id, {message: "Apnea detected"});
 		}
 		setLastEvaluation(user._id, lastBreathTimeString);
-		sendMessageToChats(user._id, {message: "Found enough data"});
 	} else {
 		console.debug(`Length: ${breathData.length}. Not enough data to classify`);
 	}
