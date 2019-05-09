@@ -44,11 +44,23 @@ function classifyBreath(user) {
 		let asthma = false;
 		let apnea = false;
 
-		console.log(`Max Breath is ${maxBreathValue}`);
 		if (maxBreathValue < 100000) {
-			console.log("Trigger apnea");
 			apnea = true;
 		}
+
+		const peaks = breathData.reduce((acc, current, index, array) => {
+			const breathValue = current.value;
+
+			if (index > 0 && array.length > index + 1 && breathValue > 100000) {
+				if (breathValue > array[index + 1].value && breathValue > array[index - 1].value) {
+					return [...acc, current];
+				}
+			}
+
+			return acc;
+		}, []);
+
+		console.log(peaks);
 
 		if (asthma) {
 			sendMessageToChats(user._id, {message: "Asthma detected"});
