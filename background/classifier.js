@@ -60,40 +60,49 @@ function getMaxBreathValue(breathData) {
 }
 
 function classifyAsthma(breathData) {
-	const peaks = breathData.reduce((acc, current, index, array) => {
-		const breathValue = current.value;
+	function getPeaks(breathData) {
+		return breathData.reduce((acc, current, index, array) => {
+			const breathValue = current.value;
 
-		if (index > 0 && array.length > index + 1 && breathValue > 100000) {
-			if (breathValue > array[index + 1].value && breathValue > array[index - 1].value) {
-				return [...acc, current];
+			if (index > 0 && array.length > index + 1 && breathValue > 100000) {
+				if (breathValue > array[index + 1].value && breathValue > array[index - 1].value) {
+					return [...acc, current];
+				}
 			}
-		}
 
-		return acc;
-	}, []);
+			return acc;
+		}, []);
+	}
 
+	function getTimeDistances(peaks) {
+		return peaks.reduce((acc, current, index, array) => {
+			const timeValue = current.time;
+
+			if (array.length > index + 1) {
+				const nextTime = array[index + 1].time;
+				return [...acc, nextTime - timeValue];
+			}
+
+			return acc;
+		}, []);
+	}
+
+	function getAvgTimeDistance(timeDistances) {
+		return timeDistances.reduce((acc, current) => {
+			return acc + current;
+		}, 0) / timeDistances.length;
+	}
+
+	const peaks = getPeaks(breathData);
 	console.log(peaks);
 
-	const timeDistances = peaks.reduce((acc, current, index, array) => {
-		const timeValue = current.time;
-
-		if (array.length > index + 1) {
-			const nextTime = array[index + 1].time;
-			return [...acc, nextTime - timeValue];
-		}
-
-		return acc;
-	}, []);
-
+	const timeDistances = getTimeDistances(peaks);
 	console.log(timeDistances);
 
-	const avgTimeDistance = timeDistances.reduce((acc, current) => {
-		return acc + current;
-	}, 0) / timeDistances.length;
-
+	const avgTimeDistance = getAvgTimeDistance(timeDistances);
 	console.log(avgTimeDistance);
 
-	return avgTimeDistance < 5000
+	return avgTimeDistance < 5000;
 }
 
 
