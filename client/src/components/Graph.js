@@ -20,7 +20,7 @@ class Graph extends Component {
 					id: id,
 					toolbar: {
 						autoSelect: "pan",
-						show: false
+						show: true
 					},
 				},
 				colors: ["#F46E7A"],
