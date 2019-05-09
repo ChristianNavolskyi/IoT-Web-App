@@ -25,10 +25,6 @@ function setLastEvaluation(userId, lastBreathTime) {
 		.catch(err => console.log(`Could not set last evaluation time. Error: ${err}`));
 }
 
-function getMaxBreathValue(breathData) {
-	return breathData.reduce((max, breath) => breath.value > max ? breath.value : max, breathData[0].value)
-}
-
 function classifyBreath(user) {
 	const lastEvaluationTimeNumber = parseInt(user.lastEvaluation);
 	const lastBreathTimeString = user.breath[user.breath.length - 1].time;
@@ -40,37 +36,64 @@ function classifyBreath(user) {
 		});
 
 	if (breathData.length > 20) {
-		const maxBreathValue = getMaxBreathValue(breathData);
-		let asthma = false;
-		let apnea = false;
-
-		if (maxBreathValue < 100000) {
-			apnea = true;
-		}
-
-		const peaks = breathData.reduce((acc, current, index, array) => {
-			const breathValue = current.value;
-
-			if (index > 0 && array.length > index + 1 && breathValue > 100000) {
-				if (breathValue > array[index + 1].value && breathValue > array[index - 1].value) {
-					return [...acc, current];
-				}
-			}
-
-			return acc;
-		}, []);
-
-		console.log(peaks);
-
-		if (asthma) {
-			sendMessageToChats(user._id, {message: "Asthma detected"});
-		} else if (apnea) {
+		if (classifyApnea(breathData)) {
 			sendMessageToChats(user._id, {message: "Apnea detected"});
 		}
+
+		if (classifyAsthma(breathData)) {
+			sendMessageToChats(user._id, {message: "Asthma detected"});
+		}
+
 		setLastEvaluation(user._id, lastBreathTimeString);
 	} else {
 		console.debug(`Length: ${breathData.length}. Not enough data to classify`);
 	}
+}
+
+function classifyApnea(breathData) {
+	const maxBreathValue = getMaxBreathValue(breathData);
+	return maxBreathValue < 100000
+}
+
+function getMaxBreathValue(breathData) {
+	return breathData.reduce((max, breath) => breath.value > max ? breath.value : max, breathData[0].value)
+}
+
+function classifyAsthma(breathData) {
+	const peaks = breathData.reduce((acc, current, index, array) => {
+		const breathValue = current.value;
+
+		if (index > 0 && array.length > index + 1 && breathValue > 100000) {
+			if (breathValue > array[index + 1].value && breathValue > array[index - 1].value) {
+				return [...acc, current];
+			}
+		}
+
+		return acc;
+	}, []);
+
+	console.log(peaks);
+
+	const timeDistances = peaks.reduce((acc, current, index, array) => {
+		const timeValue = current.time;
+
+		if (array.length > index + 1) {
+			const nextTime = array[index + 1].time;
+			return [...acc, nextTime - timeValue];
+		}
+
+		return acc;
+	}, []);
+
+	console.log(timeDistances);
+
+	const avgTimeDistance = timeDistances.reduce((acc, current) => {
+		return acc + current;
+	}, 0) / timeDistances.length;
+
+	console.log(avgTimeDistance);
+
+	return avgTimeDistance < 5000
 }
 
 
